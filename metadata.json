@@ -1,0 +1,6 @@
+{
+  "name": "Rhythm Daily · 节拍与乐理基本功",
+  "description": "五线谱节奏视奏、五度圈调式盘、钢琴键盘移调原理与节拍器每日基本功训练平台",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

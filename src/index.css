@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  }
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* ABCJS Five-Line Staff Custom Styling */
+.abcjs-container svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), filter 0.28s ease;
+}
+
+.abcjs-container svg text.abcjs-chord,
+.abcjs-container svg text.abcjs-annotation {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  fill: #71717a;
+}
+
+.dark .abcjs-container svg path,
+.dark .abcjs-container svg text,
+.dark .abcjs-container svg rect {
+  fill: #e4e4e7;
+}
+
+.dark .abcjs-container svg path.abcjs-staff,
+.dark .abcjs-container svg path.abcjs-bar {
+  stroke: #52525b;
+}
+
+/* Synchronized Bloom Keyframes (联动绽放效果) */
+@keyframes noteBloomPulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(245, 158, 11, 0));
+  }
+  45% {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.85));
+  }
+  100% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.5));
+  }
+}
+
+@keyframes stageZoomBloom {
+  0% {
+    transform: scale(0.975);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.45);
+  }
+  50% {
+    transform: scale(1.012);
+    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0.14);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+.staff-zoom-bloom {
+  animation: stageZoomBloom 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.abcjs-note-clickable {
+  cursor: pointer;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+}
+
+.abcjs-note-clickable:hover {
+  transform: scale(1.12);
+}
+
+.abcjs-note-clickable:hover path {
+  fill: #D97706 !important;
+}
+
+.abcjs-note-active {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.abcjs-note-active path,
+.abcjs-note-active text {
+  fill: #F59E0B !important;
+  stroke: #F59E0B !important;
+  filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.4));
+}
+
+.abcjs-note-sub-active {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: noteBloomPulse 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.abcjs-note-sub-active path,
+.abcjs-note-sub-active text {
+  fill: #D97706 !important;
+  stroke: #D97706 !important;
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.85));
+}

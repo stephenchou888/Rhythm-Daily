@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#18181B"/>
+  <rect x="28" y="28" width="456" height="456" rx="92" fill="none" stroke="#F59E0B" stroke-opacity="0.22" stroke-width="6"/>
+  <!-- Metronome / Pulse Triangle & Pendulum -->
+  <path d="M256 88 L374 404 L138 404 Z" fill="none" stroke="#F59E0B" stroke-width="22" stroke-linejoin="round"/>
+  <line x1="256" y1="364" x2="342" y2="146" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="322" cy="196" r="24" fill="#F59E0B"/>
+  <circle cx="256" cy="364" r="18" fill="#0EA5E9"/>
+  <!-- 5-line mini staff bars at bottom -->
+  <line x1="176" y1="434" x2="336" y2="434" stroke="#71717A" stroke-width="6" stroke-linecap="round"/>
+</svg>

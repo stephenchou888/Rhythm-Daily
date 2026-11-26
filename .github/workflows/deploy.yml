@@ -1,0 +1,84 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: TypeScript type check
+        run: npm run lint
+
+      - name: Resolve GitHub Pages base path
+        id: base-path
+        env:
+          CUSTOM_BASE_PATH: ${{ vars.VITE_BASE_PATH }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          if [ -n "$CUSTOM_BASE_PATH" ]; then
+            echo "base=$CUSTOM_BASE_PATH" >> "$GITHUB_OUTPUT"
+          elif [[ "$REPO_NAME" == *.github.io ]]; then
+            echo "base=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=/${REPO_NAME}/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build production bundle & PWA assets
+        env:
+          VITE_BASE_PATH: ${{ steps.base-path.outputs.base }}
+          DISABLE_HMR: "true"
+        run: npm run build
+
+      - name: Add SPA fallback and disable Jekyll
+        run: |
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,11 +1,103 @@
-<div align="center">
+# Rhythm Daily · 节拍与乐理基本功
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+> 每日 15 分钟系统化节拍视奏、五度圈调式与管乐移调训练平台（《Saxophone Daily》《Dizi Daily》同系列第 3 部作品）
 
-  <h1>Built with AI Studio</h2>
+[![Deploy to GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-18181B?logo=github)](../../actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-F59E0B.svg)](./LICENSE)
+[![PWA Ready](https://img.shields.io/badge/PWA-Offline%20Ready-0EA5E9.svg)](#pwa-离线安装与使用)
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+---
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## 一、核心功能与 6 层 Bento 架构复盘
 
-</div>
+**Rhythm Daily** 面向声乐、钢琴、吉他、萨克斯、竹笛及现代乐队演奏者，采用清爽高对比度卡片排版（浅色/深色双主题适配），将「真实五线谱视奏 + 硬件时钟节拍器 + 五度圈和声伴奏 + 钢琴移调原理」整合于单一页面：
+
+| 层级 | 模块名称 | 核心能力 |
+| :--- | :--- | :--- |
+| **第 1 层** | **顶部品牌导航栏** | 单拍子 (`2/4·3/4·4/4·2/2`) / 复拍子 (`6/8·9/8·12/8`) / 混合奇拍 (`5/4·5/8·7/8`) 快速分类切换、PWA 安装按钮、离线状态指示、一键静音与深浅色主题切换 |
+| **第 2 层** | **课题标题与全局检索栏** | 覆盖全部 10 种拍号课题，支持「基础节拍 / 奇数拍与爵士」筛选、随机抽拍练习、以及 **`Ctrl+K` / `Cmd+K` 全局检索面板**（可秒搜跳转拍号、节奏型、12 调号与 7 种教会调式） |
+| **第 3 层** | **五线谱视奏大卡片 (`abcjs`)** | 真实拍号驱动的小节长度与符尾连杠记谱；内置 **9 大必学节奏型 + 第 10 项「随机混合视奏」**（支持一键换题）；音符与发声 1:1 高亮同步；支持单行全景 / 双行折叠、75%–200% 纯视觉绽放缩放及全屏读谱模式 |
+| **第 4 层** | **律动控制台 · 节拍器 · 打拍测准 · 五度圈** | **左上**：当前拍点实音、拟声口诀、拍内时值拆解与慢速律动演示<br>**左下-节拍器**：Web Audio 硬件时钟前瞻调度，支持 50–180 BPM、`1x/2x/4x/3x` 细分脉冲、`50%–66%` Swing 摇摆度、1 小节预备拍（Count-in）<br>**左下-连续打卡 & 打拍测准器**：本地 7 天连续练习打卡，支持「正拍踩点 / 全节奏型跟打」双模式，展示近 8 拍 `Early ← 0ms → Late` 偏差分布条、均偏毫秒与命中率<br>**右侧-五度圈调式盘 & 节奏几何图示**：三环可点击 SVG 五度圈（大调外环 / 关系小调中环 / 升降号内环）、多边形节奏几何图、7 级顺阶和弦点击试听（三和弦 / 七和弦 / 琶音）及 **BPM 同步伴奏循环** (`I-vi-IV-V` / `ii7-V7-Imaj7` / `I-IV-V-I`) |
+| **第 5 层** | **五度圈 ↔ 钢琴键盘移调原理图** | 12 半音主音切换、7 种教会调式（Ionian ~ Harmonic Minor）试听；交互式 SVG 钢琴键盘附琥珀金（中音萨克斯 Eb ↓大六度）与晴空蓝（高音/次中音萨克斯 Bb ↓大二度）移调弯弧箭头、双对比试听卡及 12 大调升降号与竹笛筒音对照表 |
+| **第 6 层** | **今日练拍重点与页脚** | 随当前拍号动态切换的 3 条针对性练拍与乐理核心要领 |
+
+---
+
+## 二、技术架构与工程亮点
+
+- **前端框架**：React 19 + TypeScript + Vite 8 + Tailwind CSS v4
+- **真实五线谱渲染**：基于 `abcjs` 渲染矢量 SVG 五线谱，并建立 `.abcjs-note` 节点到每拍细分音符的精确 1:1 映射，支持播放中任意点击音符或底部胶囊无缝跳转（`seekStep`）
+- **零外部采样依赖的 Web Audio 合成引擎**：
+  - 使用 `AudioContext.currentTime` 前瞻调度（25ms 轮询 + 110ms Lookahead）取代易漂移的 `setInterval`，实现毫秒级节拍稳定度与精确的空格键打拍偏差计算
+  - 实时合成木鱼拍音、温暖钢琴复音、和弦琶音与音阶试听，无需下载外部音频包
+- **状态持久化与分享**：
+  - 练习打卡记录安全保存于浏览器 `localStorage`
+  - 当前课题状态（`meter`、`pattern`、`key`、`bpm`）实时同步至 URL 查询参数，刷新不丢失，可直接复制链接分享给学生或乐队成员
+- **PWA 离线训练支持**：
+  - 集成 `vite-plugin-pwa` 与 Workbox 缓存策略，支持桌面端 Chrome/Edge 一键安装及 iOS Safari「添加到主屏幕」离线全屏使用
+
+---
+
+## 三、全局快捷键一览
+
+| 快捷键 | 功能说明 |
+| :--- | :--- |
+| `Ctrl + K` / `Cmd + K` | 打开全局快速检索面板（搜索拍号、节奏型、五度圈调号、教会调式） |
+| `Space`（空格键） | 常规状态下开始/暂停慢速律动演示；开启「打拍测准器」后用于跟打测准 |
+| `←` / `→` | 切换上一拍 / 下一拍（播放中支持无缝跳转） |
+| `↑` / `↓` | 调整节拍器速度（±2 BPM） |
+| `M` | 全局一键静音 / 取消静音 |
+
+---
+
+## 四、本地开发与构建
+
+> 环境要求：Node.js `>= 20.x`
+
+```bash
+# 1. 安装依赖
+npm install
+
+# 2. 启动本地开发服务器（默认端口 3000）
+npm run dev
+
+# 3. TypeScript 静态类型检查
+npm run lint
+
+# 4. 生产环境打包（输出至 dist/）
+npm run build
+
+# 5. 本地预览生产构建结果
+npm run preview
+```
+
+---
+
+## 五、GitHub Pages 自动化编译与部署
+
+本仓库已内置完整的 GitHub Actions 工作流文件：`.github/workflows/deploy.yml`。
+
+### 启用步骤（仅需 2 步）
+
+1. 将代码推送至 GitHub 仓库的 `main`（或 `master`）分支。
+2. 打开仓库页面的 **Settings → Pages → Build and deployment**：
+   - 将 **Source** 切换为 **`GitHub Actions`**。
+3. 此后每次推送代码至主分支（或在 **Actions** 页面手动点击 **Run workflow**），系统将自动完成：
+   - Node.js 20 环境准备与依赖安装
+   - `npm run lint`（TypeScript 全量类型校验）
+   - 自动识别仓库路径并注入 `VITE_BASE_PATH`（若仓库名为 `<username>.github.io` 自动使用 `/`；普通项目仓库自动使用 `/<repo-name>/`，同步适配 Vite 资源路径与 PWA `manifest.webmanifest` 图标路径）
+   - `npm run build` 编译打包并生成 `404.html` 兜底页面
+   - 自动发布至 GitHub Pages
+
+> **自定义域名提示**：如果你为 GitHub Pages 绑定了自定义根域名（Custom Domain），只需在仓库 **Settings → Secrets and variables → Actions → Variables** 中新增变量 `VITE_BASE_PATH`，将其值设为 `/` 即可。
+
+---
+
+## 六、开源许可与使用声明
+
+1. **开源协议**：本项目源代码基于 [MIT License](./LICENSE) 开源，欢迎个人学习、音乐教学与二次开发，请保留原作者版权声明与许可文件。
+2. **教学与音频声明**：
+   - 本应用内置的所有五线谱示例、节奏口诀、和声进行及移调对照表均用于音乐基础素养与视奏训练参考。
+   - 音频均由浏览器原生 Web Audio API 实时波形合成，实际演奏音准与音色请以实体乐器、专业调音器及标准乐谱为准。
+   - 浏览器打拍测准器受蓝牙耳机延迟、操作系统音频缓冲及键盘硬件扫描率影响，建议练习测准时使用有线耳机或设备扬声器以获得最佳毫秒级体验。
+3. **隐私声明**：本项目为纯前端静态应用，不收集任何个人身份数据，也不向外部服务器上传您的练习记录；连续打卡天数与偏好设置仅存储于您的本地浏览器中。
