@@ -52,7 +52,7 @@
 
 ## 四、本地开发与构建
 
-> 环境要求：Node.js `>= 20.x`
+> 环境要求：Node.js `>= 20.19`（推荐 `22 LTS`）
 
 ```bash
 # 1. 安装依赖
@@ -83,7 +83,7 @@ npm run preview
 2. 打开仓库页面的 **Settings → Pages → Build and deployment**：
    - 将 **Source** 切换为 **`GitHub Actions`**。
 3. 此后每次推送代码至主分支（或在 **Actions** 页面手动点击 **Run workflow**），系统将自动完成：
-   - Node.js 20 环境准备与依赖安装
+   - Node.js 22 环境准备与依赖安装
    - `npm run lint`（TypeScript 全量类型校验）
    - 自动识别仓库路径并注入 `VITE_BASE_PATH`（若仓库名为 `<username>.github.io` 自动使用 `/`；普通项目仓库自动使用 `/<repo-name>/`，同步适配 Vite 资源路径与 PWA `manifest.webmanifest` 图标路径）
    - `npm run build` 编译打包并生成 `404.html` 兜底页面
